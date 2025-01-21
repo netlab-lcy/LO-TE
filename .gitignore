@@ -171,5 +171,6 @@ cython_debug/
 .pypirc
 
 # LO-TE
-# /data/
-# /data_generation/MCF_data/datas
+/data/*
+/data_generation/MCF_data/datas/*
+/data_generation/path_data/datas/*

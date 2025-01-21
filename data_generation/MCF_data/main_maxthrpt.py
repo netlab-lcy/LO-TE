@@ -7,27 +7,11 @@ import gurobipy as gp
 import json
 import numpy as np
 import time
-# import seaborn as sns
-import matplotlib.pyplot as plt
-
-
-# BRITE small
-# topologies = []
-# for i in range(6, 16):
-#     for j in range(10):
-#         topoName = "%d_%d" % (i, j)
-#         topologies.append(topoName)
-
 
 
 # BRITE large
 # topologies = ['500_0', '1000_0', '1500_0']
 
-# topology zoo small
-# topologies = ['Quest', 'Internode', 'Dataxchange', 'Pern', 'Internetmci', 'Aconet', 'Niif', 'Netrail', 'HostwayInternational', 'Abilene', 'Noel', 'Heanet', 'Belnet2004', 'WideJpn', 'Cesnet200511', 'Cesnet200603', 'Pacificwave', 'BsonetEurope', 'GtsRomania', 'BtEurope', 'Globalcenter', 'Karen', 'Garr199904', 'Claranet', 'Marnet', 'Ernet', 'Renater2001', 'Highwinds', 'Fatman', 'Aarnet', 'Garr200404', 'Sprint', 'Latnet', 'Airtel', 'Iinet', 'Uninet', 'Nsfnet', 'Belnet2003', 'HiberniaUs', 'BtAsiaPac', 'Cesnet200706', 'Cesnet200304', 'Packetexchange', 'Fccn', 'Janetlense', 'KentmanAug2005', 'Navigata', 'Harnet', 'Garr199901', 'Easynet', 'Rhnet', 'Restena', 'Compuserve', 'GtsSlovakia', 'Garr200109', 'Sinet', 'Goodnet', 'Rediris', 'Agis', 'Geant2001', 'Gridnet', 'HurricaneElectric', 'Arpanet19719', 'Peer1', 'Ans', 'BtLatinAmerica', 'Renater2004', 'Rnp', 'Grnet', 'UniC', 'Ibm', 'Garr200112', 'Nextgen', 'Roedunet', 'Garr199905', 'Cesnet201006', 'Myren', 'HiberniaNireland', 'Eunetworks']
-
-# topology zoo middle
-# topologies = ['RedBestel', 'PionierL3', 'HiberniaGlobal', 'Garr201105', 'RoedunetFibre', 'Garr201102', 'Garr201108', 'Belnet2008', 'Garr201109', 'Sanet', 'Oteglobe', 'IowaStatewideFiberMap', 'Garr201110', 'PionierL1', 'Arpanet19723', 'EliBackbone', 'Garr201111', 'Xeex', 'NetworkUsa', 'Palmetto', 'Intranetwork', 'Bics', 'Cwix', 'Geant2012', 'Ntt', 'Garr201103', 'Garr201010', 'Geant2010', 'Renater2008', 'Tinet', 'Bellcanada', 'CrlNetworkServices', 'Garr200902', 'Shentel', 'Iris', 'SwitchL3', 'Belnet2010', 'Janetbackbone', 'Bellsouth', 'Belnet2007', 'AttMpls', 'Dfn', 'Garr201008', 'Iij', 'Renater2010', 'Biznet', 'Intellifiber', 'Garr201001', 'Garr200908', 'Integra', 'Arnes', 'Garr201107', 'BeyondTheNetwork', 'Evolink', 'Surfnet', 'UsSignal', 'Garr201007', 'Belnet2006', 'Darkstrand', 'Garr201101', 'Garr201004', 'Tw', 'Switch', 'Cernet', 'Chinanet', 'Garr201012', 'Digex', 'Xspedius', 'Garr200912', 'Funet', 'Garr201201', 'Uunet', 'Ntelos', 'Canerie', 'Sunet', 'Globenet', 'Arpanet19728', 'Uninett2011', 'Esnet', 'Garr201005', 'Garr201112', 'BtNorthAmerica', 'Belnet2005', 'Columbus', 'Garr201003', 'Abvt', 'LambdaNet', 'Bandcon', 'Geant2009', 'Garr200909', 'AsnetAm', 'Belnet2009', 'Oxford', 'Uninett2010', 'Missouri', 'Renater2006',  'Garr201104', 'GtsPoland']
 # topologies = ['GEANT']
 
 # topology zoo large
@@ -49,7 +33,7 @@ TM_info = {'traffic_burst': tm_range, 'hose': tm_range, 'gravity': None}
 # TM_info = {'real': (0, 672)} # Real TM data
 
 # target TM types in the experiment
-TM_types = ['traffic_burst', 'hose', 'gravity', 'uniform', 'real'][:1] # TO BE CHECKED BEFORE RUNNING
+TM_types = ['traffic_burst', 'hose',  'real'][:1] # TO BE CHECKED BEFORE RUNNING
 data_dir = "../../data" # topo and TM data dir
 
 # scale_factor = 1.1 # congestion level

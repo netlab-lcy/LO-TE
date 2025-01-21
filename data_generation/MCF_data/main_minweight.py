@@ -9,12 +9,6 @@ import time
 
 
 
-# BRITE small
-# topologies = []
-# for i in range(6, 16):
-#     for j in range(10):
-#         topoName = "%d_%d" % (i, j)
-#         topologies.append(topoName)
 
 # BRITE large
 # topologies = ['500_0', '1000_0', '1500_0'][:2]
