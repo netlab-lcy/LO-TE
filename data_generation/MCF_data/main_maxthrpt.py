@@ -1,8 +1,7 @@
 '''
 generate initial and FIne-tune TE solution for MCF routing (maximize throughput)
 '''
-from lib.opt_model import mcfsolver, path_mcfsolver, mcfsolver_throughput, path_mcfsolver_throughput, path_mcfsolver_minpathdiff_throughput, path_mcfsolver_minpathdiff_throughput_optimal
-from lib.topo import ReadTopo
+from lib.opt_model import path_mcfsolver, path_mcfsolver_throughput, path_mcfsolver_minpathdiff_throughput
 import gurobipy as gp
 import json
 import numpy as np
@@ -36,7 +35,6 @@ TM_info = {'traffic_burst': tm_range, 'hose': tm_range, 'gravity': None}
 TM_types = ['traffic_burst', 'hose',  'real'][:1] # TO BE CHECKED BEFORE RUNNING
 data_dir = "../../data" # topo and TM data dir
 
-# scale_factor = 1.1 # congestion level
 pr_gap = 0.01
 
 prs = []
@@ -70,7 +68,6 @@ for topo_name in topologies:
         sp_path_rates.append(sp_path_rate)
     
     # TE solution for gravity model
-    # dem_rate_allone = np.ones_like(demRates['gravity'][0]) # for testing
     dem_rate_allone = np.ones(nodeNum * nodeNum - nodeNum)
     start = time.time()
     objval_allone, path_rates_allone = path_mcfsolver(nodeNum, linkNum, demNum, demands, dem_rate_allone, candidate_pathSet, linkSet)
@@ -126,31 +123,6 @@ for topo_name in topologies:
                 with gp.Env() as env:
                     results['pr_gap'] = pr_gap
                     print("pr_gap:", pr_gap)
-                    # for demand pinning
-                    # start = time.time()
-                    # objval_dp, path_rates_dp = path_mcfsolver(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, dp_ratio=0.1, env=env)
-                    # end = time.time()
-                    # print("path mcf dp objval:", objval, "time:", end - start, "pr:", objval_dp / results['path_mcf_MLU'])
-                    # prs.append(objval_dp / results['path_mcf_MLU'])
-                    
-                    
-                    # Fine-tuning solution for shortest path routing
-                    start = time.time()
-                    # LP_relax+rounding solution, for optimal, use the same parameter with path_mcfsolver_minpathdiff_throughput_optimal
-                    # objval, scale_factor_val, path_rates, flow_diffs = path_mcfsolver_minpathdiff_throughput(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, sp_path_rates, results['pathmcf_thrpt'] * (1-pr_gap), scale_factor_lb=1, scale_factor_ub=1, env=env) 
-                    # print("scale_factor_val:", scale_factor_val)
-                    # end = time.time()
-                    # print("min path diff:", objval, "time:", end-start)
-                    # diff_path = 0
-                    # for k in range(demNum):
-                    #     if flow_diffs[k] > 1e-4:
-                    #         diff_path += 1
-                    # print("min path diff sp path ratio:", diff_path / demNum)
-                    # pathmcf_spdiff_ratios.append(diff_path / demNum)
-                    # results['pathmcf_minspdiff_scale_factor'] = scale_factor_val
-                    # results['pathmcf_minspdiff_path_rates'] = path_rates
-                    # results['pathmcf_minspdiff_pathdiff_ratio'] = diff_path / demNum
-                    
                     # Fine-tuning solution for LB init solution
                     start = time.time()
                     # LP_relax+rounding solution, for optimal, use the same parameter with path_mcfsolver_minpathdiff_throughput_optimal
@@ -164,7 +136,6 @@ for topo_name in topologies:
                             diff_path += 1
                     print("min path diff lb path ratio:", diff_path / demNum)
                     pathmcf_gravitydiff_ratios.append(diff_path / demNum)
-                    # results['pathmcf_minmcfdiff_scale_factor'] = scale_factor_val # deprecated
                     results['pathmcf_minlbdiff_path_rates'] = path_rates
                     results['pathmcf_minlbdiff_pathdiff_ratio'] = diff_path / demNum
                     
@@ -181,16 +152,12 @@ for topo_name in topologies:
                             diff_path += 1
                     print("min path diff his path ratio:", diff_path / demNum)
                     pathmcf_gravitydiff_ratios.append(diff_path / demNum)
-                    # results['pathmcf_minmcfdiff_scale_factor'] = scale_factor_val # deprecated
                     results['pathmcf_minhisdiff_path_rates'] = path_rates
                     results['pathmcf_minhisdiff_pathdiff_ratio'] = diff_path / demNum
                     
 
             print(json.dumps(results), file=result_file)
         result_file.close()
-# print("prs:", prs)
-# print("path mcf sp path diff ratios:", pathmcf_spdiff_ratios)
-# print("path mcf gravity path diff ratios:", pathmcf_gravitydiff_ratios)
-# print("path mcf dp path diff ratios:", pathmcf_dpdiff_ratios)
+
 
 

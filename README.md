@@ -1,79 +1,67 @@
-# LO-TE
-Shooting Large-scale Traffic Engineering by Combining Deep Learning and Optimization Approach (CoNEXT'25)
+# Shooting Large-scale Traffic Engineering by Combining Deep Learning and Optimization Approach
 
-This is a Pytorch implementation of [FERN](https://ieeexplore.ieee.org/abstract/document/10285729) on TON 2023. 
+This is a Pytorch implementation of [LO-TE](https://doi.org/10.1145/3709372) presented on CoNEXT 2025. LO-TE provides a two-step approach to efficiently resolve large-scale traffic engineering problems: obtaining an initial solution and refining it to achieve a near-optimal TE solution.
 
-## Generating training and testing by yourself
+## Getting started
 
-## Training and Evaluating the deep learning model of FERN
+### Hardware requirements
 
-* Train FERN
+* **CPU**: 16+ cores (more cores recommended for parallel training with multiple samples).
+* **Memory**: 64+ GB RAM (512+ GB recommended for larger topologies).
+* **GPU**: 8+ GB memory (reduce `--max-flow-num` to lower GPU memory usage).
+* **Operating System**: Linux (tested on Ubuntu 20.04 and 22.04).
 
-```
-cd NN-model
+### Dependencies
 
-# Model pretrain over small scale topologies
-python3 train.py --mode classify --train-data-dir MCF_BRITE_small_train --valid-data-dir MCF_BRITE_small_train --use-cuda --training-epochs 500 --log-dir pretrain_small
+* Run `pip install -r requirements.txt` to install Python dependencies
 
-# pretrain for general classification model
-python3 train.py --mode classify --train-data-dir MCF_train --valid-data-dir MCF_BRITE_small_train --use-cuda --training-epochs 1000 --log-dir pretrain_calssify --model-load-dir pretrain_small
-# pretrain for general regression model
-python3 train.py --mode normal --train-data-dir MCF_train --valid-data-dir MCF_BRITE_small_train --use-cuda --training-epochs 1000 --log-dir pretrain_normal --model-load-dir pretrain_small
+* Install gurobipy and get a gurobi license [here](https://www.gurobi.com/academia/academic-program-and-licenses/).
 
-# P2 training for large-scale topologies, build up a dataset for a specific large-scale topology (e.g., MCF_DialtelecomCz_test)
-python3 train.py --mode classify --train-data-dir MCF_DialtelecomCz_test --valid-data-dir MCF_DialtelecomCz_test --use-cuda --training-epochs 10 --log-dir P2_DialtelecomCz  --part-failure --model-load-dir pretrain_classify --batch-size 1
-```
+### Download traning and testing data
 
-* Evaluate FERN
+We have uploaded the [training and testing data](https://1drv.ms/f/c/e7bd018766776d46/Ejx2Bqa0V0xPrtSZboyit_cB-05GU92vHvqcYwKU3jRPTw?e=sC04G3) in LO-TE paper, including topology information, traffic demands, candidate paths， and labeled/unlabeled data for training and testing.
 
-```
-# test general classification model
-python3 eval.py --mode classify --eval-data-dir MCF_BRITE_small_vary_capa_test1 --use-cuda  --log-dir pretrain_classify 
+We recommend downloading the necessary data and copying it into the ./data directory before running the program.
 
-# test general regression model
-python3 eval.py --mode normal --eval-data-dir MCF_BRITE_small_vary_capa_test1 --use-cuda  --log-dir pretrain_normal 
 
-# test general classification model for tripple failures
-python3 eval.py --mode classify --eval-data-dir MCF_tripple_test --use-cuda  --log-dir pretrain_classify --failure-type tripple
-```
+## Training and Testing LO-TE
 
-* Detect critical failure scenarios with FERN
+We have listed the training and testing commands in `run_minmlu.sh`, `run_maxthrpt.sh`, and `run_minweight.sh`. We show an example of traning and testing LO-TE on Cogentco topology and traffic burst model below: 
+
+* Pretrain a general model with supervised learning 
 
 ```
-# detect the critical failure scenarios
-python3 detect_critical_failure.py  --eval-data-dir MCF_BRITE_small_vary_capa_test1 --use-cuda  --detect-classify-model-dir pretrain_classify --detect-normal-model-dir pretrain_normal
+python3 train.py --objective min_mlu --init-te-solution his --log-dir general-minmlu-his --train-data-dir ./data/train/minmlu/general --training-epochs 10 --training-mode SL  --use-cuda --T 1 --max-flow-num 1000000
 ```
 
-We have uploaded the [pretrained model and related training and testing data](https://1drv.ms/f/c/e7bd018766776d46/EunzQphn-_JLmpyzXjQD4EUBM99uleykfrXBHZ82MeggqA?e=EdSxzN) for FERN.
-
-## Apply FERN for robust network design use cases
-
-* Apply the predicted critical failure set for network upgrade
+* Unsupervised learning for a specific topology and traffic model
 
 ```
-cp -r ./NN-model/failure_set/* ./fault-tolerance-network/network_upgrade/failure_set/
-cd ./fault-tolerance-network/network_upgrade
-python3 main.py
+python3 train.py --objective min_mlu --init-te-solution his --log-dir minmlu_his_Cogentco_traffic_burst_USL --model-load-dir general-minmlu-his --train-data-dir ./data/train/minmlu/Cogentco_traffic_burst_unlabel100 --training-epochs 50 --training-mode USL  --use-cuda --T 1  --num-sample-process 5 --K 5 --alpha 1 --max-flow-num 1000000
 ```
 
-* Apply the predicted critical set for fault-tolerant traffic engineering
+* Testing LO-TE 
 
 ```
-cp -r ./NN-model/failure_set/* ./fault-tolerance-network/R3/failure_set/
-cd ./fault-tolerance-network/R3
-python3 main.py
+python3 test.py --objective min_mlu --init-te-solution his --use-cuda    --model-load-dir minmlu_his_Cogentco_traffic_burst_USL --test-data-dir ./data/test/minmlu/Cogentco_traffic_burst   --T 1 --max-flow-num 10000000  --alpha 10
 ```
+
+## Generating training and testing data by yourself
+
+We have also provided the major data generation codes for generating your own training and testing data. Refer to `./data_generation` for more details. 
+
+
 
 If you have any questions, please post an issue or send an email to chenyiliu9@gmail.com.
 
 ## Citation
 
 ```
-@article{liu2023fern,
-  title={FERN: Leveraging Graph Attention Networks for Failure Evaluation and Robust Network Design},
-  author={Liu, Chenyi and Aggarwal, Vaneet and Lan, Tian and Geng, Nan and Yang, Yuan and Xu, Mingwei and Li, Qing},
-  journal={IEEE/ACM Transactions on Networking},
-  year={2023},
-  publisher={IEEE}
+@inproceedings{liu2025lote,
+  title={Shooting Large-scale Traffic Engineering by Combining Deep Learning and Optimization Approach},
+  author={Liu, Chenyi and Deng, Haotian and Aggarwal, Vaneet and Yang, Yuan and Xu, Mingwei },
+  booktitle=={Proceedings of the ACM CoNEXT 2025 Conference},
+  year={2025},
+  publisher={ACM}
 }
 ```

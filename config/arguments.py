@@ -13,14 +13,7 @@ def get_arg():
         help='Hidden units of GAT model')
     
     
-
-    # loss function 
-    parser.add_argument('--alpha', type=float, default=10,
-        help='Factor of maximum selected paths.')
-    parser.add_argument('--T', type=int, default=5,
-        help='Iteration steps of the path decision')
-    parser.add_argument('--K', type=int, default=1,
-        help='Sampling times for policy gradient loss')
+    
 
     # running config
     parser.add_argument('--use-cuda', action='store_true', default=False,
@@ -45,6 +38,12 @@ def get_arg():
         help='Load trained model from target dir')
     parser.add_argument('--training-mode', default="SL",
         help='mode: [SL|USL] -> SL: supervised learning, USL: unsupervised learning.')
+    parser.add_argument('--alpha', type=float, default=10,
+        help='Factor of maximum selected paths.')
+    parser.add_argument('--T', type=int, default=1,
+        help='Iteration steps of the path decision')
+    parser.add_argument('--K', type=int, default=1,
+        help='Sampling times for policy gradient loss')
     
     args = parser.parse_args()
 

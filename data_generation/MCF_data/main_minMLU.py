@@ -1,7 +1,7 @@
 '''
 generate initial TE solution for MCF routing (maximize throughput)
 '''
-from lib.opt_model import path_mcfsolver, path_mcfsolver_minpathdiff, path_mcfsolver_minpathdiff_optimal
+from lib.opt_model import path_mcfsolver, path_mcfsolver_minpathdiff
 from lib.topo import ReadTopo
 import gurobipy as gp
 import json
@@ -132,29 +132,6 @@ for topo_name in topologies:
             
                 print("pr_gap:", pr_gap)
                 with gp.Env() as env:
-                    # for demand pinning
-                    # start = time.time()
-                    # objval_dp, path_rates_dp = path_mcfsolver(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, dp_ratio=0.1, env=env)
-                    # end = time.time()
-                    # print("path mcf dp objval:", objval, "time:", end - start, "pr:", objval_dp / results['path_mcf_MLU'])
-                    # prs.append(objval_dp / results['path_mcf_MLU'])
-                    
-                    
-                    # Fine-tuning solution for shortest path routing
-                    # start = time.time()
-                    # objval, path_rates, flow_diffs = path_mcfsolver_minpathdiff(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, sp_path_rates, results['pathmcf_MLU'] * (1+pr_gap), env=env)
-                    # end = time.time()
-                    # print("mlu:", objval, "pr:", objval / results['pathmcf_MLU'], "satisfied:", objval <= results['pathmcf_MLU'] * (1+pr_gap))
-                    # diff_path = 0
-                    # for k in range(demNum):
-                    #     if flow_diffs[k] > 1e-4:
-                    #         diff_path += 1
-                    # print("min path diff sp path ratio:", diff_path / demNum)
-                    # pathmcf_spdiff_ratios.append(diff_path / demNum)
-                    # results['pathmcf_minspdiff_path_rates'] = path_rates
-                    # results['pathmcf_minspdiff_pathdiff_ratio'] = diff_path / demNum
-                    
-                    
                     # Fine-tuning solution for LB init solution
                     start = time.time()
                     objval, path_rates, flow_diffs = path_mcfsolver_minpathdiff(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, path_rates_allone, results['pathmcf_MLU'] * (1+pr_gap), env=env)
@@ -187,7 +164,3 @@ for topo_name in topologies:
                     
             print(json.dumps(results), file=result_file)
         result_file.close()
-# print("prs:", prs)
-# print("path mcf sp path diff ratios:", pathmcf_spdiff_ratios)
-# print("path mcf pathmcf path diff ratios:", pathmcf_gravitydiff_ratios)
-# print("path mcf dp path diff ratios:", pathmcf_dpdiff_ratios)

@@ -174,3 +174,5 @@ cython_debug/
 /data/*
 /data_generation/MCF_data/datas/*
 /data_generation/path_data/datas/*
+/models/*
+/log/*

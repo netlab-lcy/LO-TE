@@ -1,6 +1,5 @@
-from lib.opt_model import path_mcfsolver, path_mcfsolver_minweight, path_mcfsolver_minpathdiff_minweight, path_mcfsolver_minpathdiff_minweight_optimal
+from lib.opt_model import path_mcfsolver, path_mcfsolver_minweight, path_mcfsolver_minpathdiff_minweight
 from lib.topo import ReadTopo
-from lib.similarity import linkdiff_similarity
 import gurobipy as gp
 import json
 import numpy as np
@@ -13,11 +12,6 @@ import time
 # BRITE large
 # topologies = ['500_0', '1000_0', '1500_0'][:2]
 
-# topology zoo small
-# topologies = ['Quest', 'Internode', 'Dataxchange', 'Pern', 'Internetmci', 'Aconet', 'Niif', 'Netrail', 'HostwayInternational', 'Abilene', 'Noel', 'Heanet', 'Belnet2004', 'WideJpn', 'Cesnet200511', 'Cesnet200603', 'Pacificwave', 'BsonetEurope', 'GtsRomania', 'BtEurope', 'Globalcenter', 'Karen', 'Garr199904', 'Claranet', 'Marnet', 'Ernet', 'Renater2001', 'Highwinds', 'Fatman', 'Aarnet', 'Garr200404', 'Sprint', 'Latnet', 'Airtel', 'Iinet', 'Uninet', 'Nsfnet', 'Belnet2003', 'HiberniaUs', 'BtAsiaPac', 'Cesnet200706', 'Cesnet200304', 'Packetexchange', 'Fccn', 'Janetlense', 'KentmanAug2005', 'Navigata', 'Harnet', 'Garr199901', 'Easynet', 'Rhnet', 'Restena', 'Compuserve', 'GtsSlovakia', 'Garr200109', 'Sinet', 'Goodnet', 'Rediris', 'Agis', 'Geant2001', 'Gridnet', 'HurricaneElectric', 'Arpanet19719', 'Peer1', 'Ans', 'BtLatinAmerica', 'Renater2004', 'Rnp', 'Grnet', 'UniC', 'Ibm', 'Garr200112', 'Nextgen', 'Roedunet', 'Garr199905', 'Cesnet201006', 'Myren', 'HiberniaNireland', 'Eunetworks']
-
-# topology zoo middle
-# topologies = ['RedBestel', 'PionierL3', 'HiberniaGlobal', 'Garr201105', 'RoedunetFibre', 'Garr201102', 'Garr201108', 'Belnet2008', 'Garr201109', 'Sanet', 'Oteglobe', 'IowaStatewideFiberMap', 'Garr201110', 'PionierL1', 'Arpanet19723', 'EliBackbone', 'Garr201111', 'Xeex', 'NetworkUsa', 'Palmetto', 'Intranetwork', 'Bics', 'Cwix', 'Geant2012', 'Ntt', 'Garr201103', 'Garr201010', 'Geant2010', 'Renater2008', 'Tinet', 'Bellcanada', 'CrlNetworkServices', 'Garr200902', 'Shentel', 'Iris', 'SwitchL3', 'Belnet2010', 'Janetbackbone', 'Bellsouth', 'Belnet2007', 'AttMpls', 'Dfn', 'Garr201008', 'Iij', 'Renater2010', 'Biznet', 'Intellifiber', 'Garr201001', 'Garr200908', 'Integra', 'Arnes', 'Garr201107', 'BeyondTheNetwork', 'Evolink', 'Surfnet', 'UsSignal', 'Garr201007', 'Belnet2006', 'Darkstrand', 'Garr201101', 'Garr201004', 'Tw', 'Switch', 'Cernet', 'Chinanet', 'Garr201012', 'Digex', 'Xspedius', 'Garr200912', 'Funet', 'Garr201201', 'Uunet', 'Ntelos', 'Canerie', 'Sunet', 'Globenet', 'Arpanet19728', 'Uninett2011', 'Esnet', 'Garr201005', 'Garr201112', 'BtNorthAmerica', 'Belnet2005', 'Columbus', 'Garr201003', 'Abvt', 'LambdaNet', 'Bandcon', 'Geant2009', 'Garr200909', 'AsnetAm', 'Belnet2009', 'Oxford', 'Uninett2010', 'Missouri', 'Renater2006',  'Garr201104', 'GtsPoland']
 topologies = ['GEANT']
 
 
@@ -37,7 +31,7 @@ else:
 TM_info = {'real': (0, 672)} # Real TM data
 
 # target TM types in the experiment
-TM_types = ['traffic_burst', 'hose', 'gravity', 'uniform', 'real'][-1:] # TO BE CHECKED BEFORE RUNNING
+TM_types = ['traffic_burst', 'hose', 'real'][-1:] # TO BE CHECKED BEFORE RUNNING
 data_dir = "../../data" # topo and TM data dir
 
 pr_gap = 0.01
@@ -77,11 +71,6 @@ for topo_name in topologies:
         sp_path_rate[0] = 1
         sp_path_rates.append(sp_path_rate)
     
-    # # TE solution for gravity model
-    # dem_rate_allone = np.ones_like(demRates['gravity'][0]) *10 # for testing
-    # objval_allone, path_rates_allone = path_mcfsolver(nodeNum, linkNum, demNum, demands, dem_rate_allone, candidate_pathSet, linkSet)
-    
-    
     for tm_type in TM_types:
         print("TM type:", tm_type)
         # calculate scale factor and init TE solution for different TM types
@@ -114,13 +103,8 @@ for topo_name in topologies:
             dem_rate = dem_rate * normal_factor 
             results['dem_rate'] = dem_rate.tolist()
             results['his_path_rates'] = path_rates_his
-            # results['sp_path_rates'] = sp_path_rates 
 
             if labeled:
-                # start = time.time()
-                # objval, path_rates = path_mcfsolver(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet)
-                # print("exact case minMLU:", objval, "normal_factor:", normal_factor)
-
                 # optimal path mcf
                 start = time.time()
                 opt_thrpt, opt_weight, path_rates = path_mcfsolver_minweight(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, wMatrix, MAXWEIGHT,  env=None) 
@@ -132,36 +116,6 @@ for topo_name in topologies:
                 
                 print("pr_gap:", pr_gap)
                 with gp.Env() as env:
-                    # # Fine-tuning solution for shortest path routing
-                    # start = time.time()
-                    # objval, path_rates, flow_diffs = path_mcfsolver_minpathdiff_minweight(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, sp_path_rates, results['pathmcf_thrpt']*(1-pr_gap), results['pathmcf_weight']*(1+pr_gap), wMatrix, MAXWEIGHT, env=env)
-                    # end = time.time()
-                    # print("min path diff:", objval, "time:", end-start)
-                    # diff_path = 0
-                    # for k in range(demNum):
-                    #     if flow_diffs[k] > 1e-4:
-                    #         diff_path += 1
-                    # print("min path diff sp path ratio:", diff_path / demNum)
-                    # pathmcf_spdiff_ratios.append(diff_path / demNum)
-                    # results['pathmcf_minspdiff_path_rates'] = path_rates
-                    # results['pathmcf_minspdiff_pathdiff_ratio'] = diff_path / demNum
-                    
-                    # # Fine-tuning solution for solutions of gravity TM
-                    # start = time.time()
-                    # objval, path_rates, flow_diffs = path_mcfsolver_minpathdiff_minweight(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, path_rates_allone, results['pathmcf_thrpt']*(1-pr_gap), results['pathmcf_weight']*(1+pr_gap), wMatrix, MAXWEIGHT, env=env)
-                    # end = time.time()
-                    # print("min path diff:", objval)
-                    # diff_path = 0
-                    # for k in range(demNum):
-                    #     if flow_diffs[k] > 1e-4:
-                    #         diff_path += 1
-                    #     elif flow_diffs[k] > 0:
-                    #         print("exception diff:", flow_diffs[k])
-                    # print("min path diff allonemcf path ratio:", diff_path / demNum, "time:", end-start)
-                    # pathmcf_gravitydiff_ratios.append(diff_path / demNum)
-                    # results['pathmcf_minmcfdiff_path_rates'] = path_rates
-                    # results['pathmcf_minmcfdiff_pathdiff_ratio'] = diff_path / demNum
-
                     # Fine-tuning solution for solutions of init gravity TM
                     start = time.time()
                     objval, path_rates, flow_diffs = path_mcfsolver_minpathdiff_minweight(nodeNum, linkNum, demNum, demands, dem_rate, candidate_pathSet, linkSet, path_rates_his, results['pathmcf_thrpt']*(1-pr_gap), results['pathmcf_weight']*(1+pr_gap), wMatrix, MAXWEIGHT, env=env)
@@ -181,9 +135,6 @@ for topo_name in topologies:
             print(json.dumps(results), file=result_file)
         result_file.close()
 
-# print("path mcf sp path diff ratios:", pathmcf_spdiff_ratios)
-# print("path mcf gravity path diff ratios:", pathmcf_gravitydiff_ratios)
-# print("path mcf dp path diff ratios:", pathmcf_dpdiff_ratios)
 
 
 
