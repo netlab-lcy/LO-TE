@@ -13,16 +13,27 @@ This is a Pytorch implementation of [LO-TE](https://doi.org/10.1145/3709372) pre
 
 ### Dependencies
 
-* Run `pip install -r requirements.txt` to install Python dependencies
+To set up the environment, ensure the following dependencies are installed:
 
-* Install gurobipy and get a gurobi license [here](https://www.gurobi.com/academia/academic-program-and-licenses/).
+1. **Install PyTorch**  
+   Follow the official installation guide for your system: [PyTorch Installation](https://pytorch.org/get-started/locally/).
+
+2. **Install PyTorch Geometric**  
+   Refer to the official documentation for installation instructions: [PyTorch Geometric Installation](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html).
+
+3. **Install Gurobi and obtain a license**  
+   - Install the `gurobipy` package.  
+   - Acquire a Gurobi license for academic use here: [Gurobi Academic License](https://www.gurobi.com/academia/academic-program-and-licenses/).
+
+4. **Python environment setup**  
+   - The required Python dependencies for training and evaluation are listed in `requirements.txt`.  
+   - However, we recommend installing the dependencies manually using `pip` to ensure compatibility with your operating system and version.
 
 ### Download traning and testing data
 
-We have uploaded the [training and testing data](https://1drv.ms/f/c/e7bd018766776d46/Ejx2Bqa0V0xPrtSZboyit_cB-05GU92vHvqcYwKU3jRPTw?e=sC04G3) in LO-TE paper, including topology information, traffic demands, candidate paths， and labeled/unlabeled data for training and testing.
+We have uploaded the [training and testing data](https://1drv.ms/f/c/e7bd018766776d46/Ejx2Bqa0V0xPrtSZboyit_cB-05GU92vHvqcYwKU3jRPTw?e=sC04G3) in LO-TE paper, including topology information, traffic demands, candidate paths，and labeled/unlabeled data for training and testing.
 
-We recommend downloading the necessary data and copying it into the ./data directory before running the program.
-
+We recommend downloading the necessary data and copying it into the `./data` directory before running the program.
 
 ## Training and Testing LO-TE
 
@@ -46,9 +57,14 @@ python3 train.py --objective min_mlu --init-te-solution his --log-dir minmlu_his
 python3 test.py --objective min_mlu --init-te-solution his --use-cuda    --model-load-dir minmlu_his_Cogentco_traffic_burst_USL --test-data-dir ./data/test/minmlu/Cogentco_traffic_burst   --T 1 --max-flow-num 10000000  --alpha 10
 ```
 
+The summary of performance metrics (e.g., maximum link utilization, throughput, average transmission weight) of the finetuned solution and the optimal solution will be listed at the end of output log of "test.py".
+
 ## Generating training and testing data by yourself
 
-We have also provided the major data generation codes for generating your own training and testing data. Refer to `./data_generation` for more details. 
+We have also provided the major data generation codes for generating your own training and testing data. 
+* `./data_generation/MCF_data` are used for generate training data and testing data for LO-TE.
+* `./data_generation/path_data` are used for generate candidate paths for LO-TE.
+Refer to `./data_generation` for more details. 
 
 
 
