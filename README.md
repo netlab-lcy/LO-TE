@@ -8,7 +8,7 @@ This is a Pytorch implementation of [LO-TE](https://doi.org/10.1145/3709372) pre
 
 * **CPU**: 16+ cores (more cores recommended for parallel training with multiple samples).
 * **Memory**: 64+ GB RAM (512+ GB recommended for larger topologies).
-* **GPU**: 8+ GB memory (reduce `--max-flow-num` to lower GPU memory usage).
+* **GPU**: 8+ GB memory (reduce `--max-flow-num` to lower GPU memory usage, such as setting it to 1/n of the total number of traffic demands).
 * **Operating System**: Linux (tested on Ubuntu 20.04 and 22.04).
 
 ### Dependencies
@@ -31,7 +31,7 @@ To set up the environment, ensure the following dependencies are installed:
 
 ### Download traning and testing data
 
-We have uploaded the [training and testing data](https://1drv.ms/f/c/e7bd018766776d46/Ejx2Bqa0V0xPrtSZboyit_cB-05GU92vHvqcYwKU3jRPTw?e=sC04G3) in LO-TE paper, including topology information, traffic demands, candidate paths，and labeled/unlabeled data for training and testing.
+We have uploaded the [compact dataset](https://zenodo.org/records/14869434) for validating the functionality of the artifact. We have also uploaded the [full dataset](https://1drv.ms/f/c/e7bd018766776d46/Ejx2Bqa0V0xPrtSZboyit_cB-05GU92vHvqcYwKU3jRPTw?e=sC04G3) used in LO-TE paper, including topology information, traffic demands, candidate paths，and labeled/unlabeled data for training and testing.
 
 We recommend downloading the necessary data and copying it into the `./data` directory before running the program.
 
